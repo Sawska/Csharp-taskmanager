@@ -19,7 +19,8 @@ namespace Task_manager
             Console.WriteLine("4. Delete task");
             Console.WriteLine("5. Delete all task");
             Console.WriteLine("6. Mark all task down");
-            Console.WriteLine("7. Exit");
+            Console.WriteLine("7. Check if task deadline passed");
+            Console.WriteLine("8. Exit");
             try
             {
                 int option = Convert.ToInt32(Console.ReadLine());
@@ -35,7 +36,7 @@ namespace Task_manager
         }
         public static void DirectToAction(int option)
         {
-            if(option< 1 || option > 7)
+            if(option< 1 || option > 8)
             {
                 Console.WriteLine("This is not an option");
                 Console.WriteLine("Press any button to continue");
@@ -46,7 +47,8 @@ namespace Task_manager
             if (option == 3) allTask();
             if (option == 4 || option == 2) ChoseTask(option);
             if (option == 5 || option == 6) ChooseAll(option);
-            if (option == 7) Environment.Exit(0);
+            if (option == 7) showPassed();
+            if (option == 8) Environment.Exit(0);
         }
         public static void AddTask()
         {
@@ -66,7 +68,7 @@ namespace Task_manager
             try
             {
                 int DeadLineOption = DateOption();
-                if (DeadLineOption == 1) DeadLine = EnterDate();
+                if (DeadLineOption == 1) DeadLine = Convert.ToString(EnterDate());
             } catch
             {
                 Console.WriteLine("Invalid date");
@@ -88,11 +90,21 @@ namespace Task_manager
                 Console.WriteLine("2. Task without deadline");
                 return Convert.ToInt32(Console.ReadLine());
         }
-        public static string EnterDate()
+        public static DateTime EnterDate()
             {
             Console.WriteLine("Enter date in YYY-MM-DD");
-            string date = Console.ReadLine();
-            return date;
+            try
+            {
+                DateTime date = Convert.ToDateTime(Console.ReadLine());
+                return date;
+            }
+            catch
+            {
+                Console.WriteLine("This is wrong format");
+                Console.WriteLine("Press any button to continue");
+                Console.ReadLine();
+                return  EnterDate();
+            }
         }
         public static void allTask()
         {
@@ -106,7 +118,6 @@ namespace Task_manager
             }
             catch(Exception err)
             {
-                Console.WriteLine(err);
                 Console.WriteLine("You don't have tasks");
                 Console.WriteLine("Press any button to continue");
                 Console.ReadLine();
@@ -233,6 +244,33 @@ namespace Task_manager
                 Console.ReadLine();
                 Options();
             }
+        }
+        public static List<Task> getPassed()
+        {
+            List<Task> tasks = TasksContainer.getList();
+           return  tasks = tasks.Select(el => new { Task = el })
+            .Where((item) => item.Task.complited == false && TasksContainer.CheckIfDeadLinePassed(item.Task))
+            .Select((el) => el.Task)
+            .ToList();
+        }
+        public static void showPassed()
+        {
+            List<Task> tasks = getPassed();
+            if (tasks.Count == 0)
+            {
+                Console.WriteLine("You don't have passed deadlines");
+                Console.WriteLine("Press any button to continue");
+                Console.ReadLine();
+                Options();
+            }
+            for(int i =0;i<tasks.Count;i++)
+            {
+                string check = "[ ]";
+                Console.WriteLine($"{check} {i + 1}. {tasks[i].name} {tasks[i].DeadLine}");
+            }
+            Console.WriteLine("Press any button to continue");
+            Console.ReadLine();
+            Options();
         }
         public static void Main()
         {

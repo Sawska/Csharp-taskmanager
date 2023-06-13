@@ -44,6 +44,10 @@ namespace Task_manager
                 Console.WriteLine($"{check} {i + 1}. {tasks[i].name} {tasks[i].DeadLine}");
 			}
 		}
+		public static bool CheckIfDeadLinePassed(Task el)
+		{
+			return Convert.ToDateTime(el.DeadLine) < DateTime.Now;
+		}
     }
 }
 
